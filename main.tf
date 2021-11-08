@@ -103,6 +103,25 @@ resource "aws_volume_attachment" "ebs_attachment" {
     force_detach =true     
    depends_on=[ aws_ebs_volume.my_volume,aws_ebs_volume.my_volume]
 }
+
+resource "aws_launch_template" "foobar" {
+  name_prefix   = "foobar"
+  image_id      = "ami-041db4a969fe3eb68"
+  instance_type = "t2.micro"
+}
+
+resource "aws_autoscaling_group" "bar" {
+  availability_zones = ["ap-south-1b"]
+  desired_capacity   = 1
+  max_size           = 1
+  min_size           = 1
+
+  launch_template {
+    id      = aws_launch_template.foobar.id
+    version = "$Latest"
+  }
+}
+
 resource "aws_s3_bucket" "task1_s3bucket" {
   bucket = "website-images-res"
   acl    = "public-read"
